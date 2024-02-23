@@ -1,5 +1,5 @@
 {
-    "name": "AP CSP PROJECT",
+    "name": "AP CSP PROJECT - Copy",
     "description": "",
     "dependencies": {
         "device": "*"
@@ -20,5 +20,5 @@
     "supportedTargets": [
         "arcade"
     ],
-    "preferredEditor": "blocksprj"
+    "preferredEditor": "tsprj"
 }
