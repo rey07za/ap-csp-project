@@ -17,7 +17,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.powerUpSprite, function (sprite,
     sprites.destroy(otherSprite)
 })
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (game.runtime() - timeCheck >= 600) {
+    if (game.runtime() - timeCheck >= 500) {
         timeCheck = game.runtime()
         projectile = sprites.createProjectileFromSprite(img`
             . 9 . . . . . 9 . . . . 
@@ -35,11 +35,13 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     }
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.secondEnemy, function (sprite, otherSprite) {
-    sprites.destroy(otherSprite)
+    sprites.destroy(otherSprite, effects.coolRadial, 500)
     info.changeLifeBy(-3)
+    info.changeScoreBy(-3)
 })
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.secondEnemy, function (sprite, otherSprite) {
     sprites.destroy(otherSprite, effects.rings, 500)
+    sprites.destroy(sprite)
     info.changeScoreBy(1)
 })
 info.onLifeZero(function () {
@@ -47,8 +49,9 @@ info.onLifeZero(function () {
     game.reset()
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.thirdEnemy, function (sprite, otherSprite) {
-    sprites.destroy(otherSprite)
+    sprites.destroy(otherSprite, effects.coolRadial, 500)
     info.changeLifeBy(-2)
+    info.changeScoreBy(-2)
 })
 function EnemyDifficultySpawner (gameModeDifficulty: number) {
     if (gameModeDifficulty < 5) {
@@ -136,10 +139,12 @@ function EnemyDifficultySpawner (gameModeDifficulty: number) {
 }
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.thirdEnemy, function (sprite, otherSprite) {
     sprites.destroy(otherSprite, effects.rings, 500)
+    sprites.destroy(sprite)
     info.changeScoreBy(1)
 })
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, otherSprite) {
     sprites.destroy(otherSprite, effects.rings, 500)
+    sprites.destroy(sprite)
     info.changeScoreBy(1)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
@@ -306,6 +311,13 @@ controller.moveSprite(playerSprite, 0, 100)
 playerScore = 0
 info.setScore(0)
 info.setLife(25)
+game.onUpdate(function () {
+    for (let value of sprites.allOfKind(SpriteKind.Enemy)) {
+        if (alienEnemy.x < 0) {
+            info.changeScoreBy(-2)
+        }
+    }
+})
 game.onUpdateInterval(1000, function () {
     powerUpsList = [
     img`
@@ -332,22 +344,12 @@ game.onUpdateInterval(1000, function () {
         5 . . . . . . . . . 
         `,
     img`
-        . . . . . . b b b b . . . . . . 
-        . . . . . . b 4 4 4 b . . . . . 
-        . . . . . . b b 4 4 4 b . . . . 
-        . . . . . b 4 b b b 4 4 b . . . 
-        . . . . b d 5 5 5 4 b 4 4 b . . 
-        . . . . b 3 2 3 5 5 4 e 4 4 b . 
-        . . . b d 2 2 2 5 7 5 4 e 4 4 e 
-        . . . b 5 3 2 3 5 5 5 5 e e e e 
-        . . b d 7 5 5 5 3 2 3 5 5 e e e 
-        . . b 5 5 5 5 5 2 2 2 5 5 d e e 
-        . b 3 2 3 5 7 5 3 2 3 5 d d e 4 
-        . b 2 2 2 5 5 5 5 5 5 d d e 4 . 
-        b d 3 2 d 5 5 5 d d d 4 4 . . . 
-        b 5 5 5 5 d d 4 4 4 4 . . . . . 
-        4 d d d 4 4 4 . . . . . . . . . 
-        4 4 4 4 . . . . . . . . . . . . 
+        . 2 2 . 2 2 . 
+        2 2 2 2 1 2 2 
+        2 2 2 2 2 1 2 
+        . 2 2 2 2 2 . 
+        . . 2 2 2 . . 
+        . . . 2 . . . 
         `,
     img`
         4 4 4 . . 4 4 4 4 4 . . . . . . 
